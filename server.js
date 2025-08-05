@@ -6,6 +6,7 @@ const path = require('path');
 
 // Load environment variables
 dotenv.config();
+console.log('Loaded MONGO_URI:', process.env.MONGO_URI);
 
 const app = express();
 
