@@ -17,6 +17,7 @@ const messagesRoute = require('./routes/messages');
 const clientsRoute = require('./routes/clients');
 const usersRoute = require('./routes/users'); 
 const analyticsRoutes = require('./routes/analytics');
+const activityRoutes = require("./routes/activity");
 
 app.use(express.static(path.join(__dirname, "public"))); 
 
@@ -25,9 +26,8 @@ app.use('/api/messages', messagesRoute);
 app.use('/api/clients', clientsRoute);
 app.use('/api/users', usersRoute);
 app.use('/api/analytics', analyticsRoutes);
+app.use("/api/activity", activityRoutes);
 
-// Serve frontend if needed later (optional)
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -36,7 +36,11 @@ app.get('/', (req, res) => {
 
 // MongoDB connection
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || 'your-mongodb-uri';
+
+if (!process.env.MONGO_URI) {
+  throw new Error("MONGO_URI not found in environment variables");
+}
+const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
   .connect(MONGO_URI, {
