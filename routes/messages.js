@@ -1,8 +1,8 @@
+require('dotenv').config(); // <--- this loads .env variables
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/messages');
 const { Resend } = require('resend');
-
 // 🔑 Initialize Resend client
 const resend = new Resend(process.env.RESEND_API_KEY);
 
