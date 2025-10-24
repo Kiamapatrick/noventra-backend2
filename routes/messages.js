@@ -12,6 +12,15 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// ✅ Verify transporter ONCE at startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('🚨 Email transporter connection failed:', error);
+  } else {
+    console.log('✅ Email transporter is ready to send messages!');
+  }
+});
+
 // 📨 POST /api/messages
 router.post('/', async (req, res) => {
   try {
@@ -51,6 +60,7 @@ Sent at: ${new Date().toLocaleString()}
     res.status(500).json({ error: 'Failed to save or email message' });
   }
 });
+
 
 // 🧾 GET /api/messages
 router.get('/', async (req, res) => {
