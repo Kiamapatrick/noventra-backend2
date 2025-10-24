@@ -6,6 +6,12 @@ const path = require('path');
 
 // Load environment variables
 dotenv.config();
+console.log("🔍 ENV CHECK:", {
+  EMAIL_TO: process.env.EMAIL_TO,
+  RESEND_API_KEY: process.env.RESEND_API_KEY ? "Loaded ✅" : "Missing ❌",
+  MONGO_URI: process.env.MONGO_URI ? "Loaded ✅" : "Missing ❌",
+});
+
 const app = express();// redeploy test
 
 // Middleware
@@ -28,6 +34,8 @@ app.use('/api/users', usersRoute);
 app.use('/api/analytics', analyticsRoutes);
 app.use("/api/activity", activityRoutes);
 
+// Serve frontend if needed later (optional)
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -36,11 +44,7 @@ app.get('/', (req, res) => {
 
 // MongoDB connection
 const PORT = process.env.PORT || 5000;
-
-if (!process.env.MONGO_URI) {
-  throw new Error("MONGO_URI not found in environment variables");
-}
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI || 'your-mongodb-uri';
 
 mongoose
   .connect(MONGO_URI, {
