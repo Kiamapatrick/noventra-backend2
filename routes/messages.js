@@ -1,25 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/messages');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-// ✉️ Create transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER, // your Gmail
-    pass: process.env.EMAIL_PASS  // your app password
-  }
-});
-
-// ✅ Verify transporter ONCE at startup
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('🚨 Email transporter connection failed:', error);
-  } else {
-    console.log('✅ Email transporter is ready to send messages!');
-  }
-});
+// 🔑 Initialize Resend client
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // 📨 POST /api/messages
 router.post('/', async (req, res) => {
@@ -30,10 +15,10 @@ router.post('/', async (req, res) => {
     const newMessage = new Message({ name, email, subject, message });
     const savedMessage = await newMessage.save();
 
-    // 2️⃣ Send email notification
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER, // your own address, or multiple if needed
+    // 2️⃣ Send email via Resend API
+    await resend.emails.send({
+      from: 'Noventra Contact <onboarding@resend.dev>', // can customize later
+      to: process.env.EMAIL_TO,
       subject: `New message from ${name}: ${subject}`,
       text: `
 You received a new message from your website contact form:
@@ -46,20 +31,18 @@ Message:
 ${message}
 
 Sent at: ${new Date().toLocaleString()}
-      `
-    };
+      `,
+    });
 
-    await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent successfully!');
-
-    // 3️⃣ Respond to frontend
+    console.log('✅ Email sent successfully via Resend!');
     res.status(201).json(savedMessage);
 
   } catch (err) {
-    console.error("❌ Error saving or emailing message:", err);
-    res.status(500).json({ error: 'Failed to save or email message' });
+    console.error('❌ Error saving or emailing message:', err);
+    res.status(500).json({ error: 'Failed to save or send message' });
   }
 });
+
 
 
 // 🧾 GET /api/messages
