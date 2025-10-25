@@ -30,7 +30,10 @@ Subject: ${subject}
 Message:
 ${message}
 
-Sent at: ${new Date().toLocaleString()}
+Sent at: ${new Date(savedMessage.createdAt).toLocaleString('en-KE', {
+  timeZone: 'Africa/Nairobi'
+})}
+
       `,
     });
 
