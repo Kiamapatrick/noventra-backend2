@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
 
     // 2️⃣ Send email via Resend API
     await resend.emails.send({
-      from: 'Noventra Contact <onboarding@resend.dev>', // can customize later
+      from: "Noventra Website <admin@noventraadvisoryglobal.com>", // can customize later
       to: process.env.EMAIL_TO,
       subject: `New message from ${name}: ${subject}`,
       text: `
